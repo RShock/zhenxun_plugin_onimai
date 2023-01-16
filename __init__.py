@@ -48,12 +48,12 @@ async def watch_handle(bot: Bot, event: GroupMessageEvent, arg: Message = Comman
     num = arg.extract_plain_text().strip()
     if num == '':
         # 发送图片
-        await send_index(bot, event)
+        await send_index(bot, watch, event)
     else:
         file = check_num(num)
         if not file:
             await watch.finish(f'您输入的章节"{num}"无法找到')
-        await send_comic(bot, event, file)
+        await send_comic(bot, watch, event, file)
         await save_json(event.user_id, file)
 
 
@@ -74,27 +74,32 @@ async def help_handle(event: GroupMessageEvent):
 漫画帮助：显示这段文字。""")
 
 
-async def send_index(bot: Bot, event: GroupMessageEvent):
+async def send_index(bot: Bot, bot2, event: GroupMessageEvent):
     index_file_path = f"file:///{path}/src/目录/"
     index_path = f"{path}/src/目录/"
     file = os.listdir(index_path)
+    file.sort(key=lambda x: int(x.split('.')[0]))
+
     msg = ["别当欧尼酱了！目录：", "输入看漫画 X 就可以抵达对应章节了（X为目录左侧的章节数字，如`看漫画 1`）"]
     for file_name in file:
         if file_name.endswith('.jpg'):
             file_path = index_file_path + file_name
             msg.append(MessageSegment.image(file_path))
-    await super_send(bot, event, msg)
+    await super_send(bot, bot2, event, msg)
 
 
-async def send_comic(bot: Bot, event: GroupMessageEvent, file):
+async def send_comic(bot: Bot, bot2, event: GroupMessageEvent, file):
     image_file_path = f"file:///{path}/src/comic/{file}/"
 
+    files = os.listdir(image_path + file)
+    files.sort(key=lambda x: int(x.split('.')[0]))
+
     msg = ["你正在观看：" + file]
-    for file2 in os.listdir(image_path + file):
+    for file2 in files:
         if file2.endswith('.jpg'):
             file_path = image_file_path + file2
             msg.append(MessageSegment.image(file_path))
-    await super_send(bot, event, msg)
+    await super_send(bot, bot2, event, msg)
 
 
 async def send_group_msg(
@@ -117,7 +122,7 @@ async def send_group_msg(
     )
 
 
-async def super_send(bot, event, msg):
+async def super_send(bot, bot2, event, msg):
     try:
         await send_group_msg(bot, event, "小真寻", msg)
     except Exception as e:
