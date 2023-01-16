@@ -1,4 +1,4 @@
-# 《别当欧尼酱了！》漫画鉴赏
+# 《别当欧尼酱了！》漫画鉴赏（正在修复bug）
 
 ![01](https://user-images.githubusercontent.com/11630758/212644184-e0c65734-2183-4281-8b23-e6fc9e98042d.jpg)
 
