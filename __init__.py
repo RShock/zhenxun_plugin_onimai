@@ -36,7 +36,7 @@ __plugin_configs__ = {
 # 看漫画/继续看
 # 漫画帮助
 watch = on_command("看漫画", priority=5, block=True)
-continue_watch = on_command("继续看", priority=5, block=True)
+continue_watch = on_command("继续看", aliases={"下一话"}, priority=5, block=True)
 comic_help = on_command("漫画帮助", priority=5, block=True)
 
 path = os.path.dirname(__file__)
@@ -69,7 +69,7 @@ async def continue_watch_handle(bot: Bot, event: GroupMessageEvent):
 @comic_help.handle()
 async def help_handle(event: GroupMessageEvent):
     await comic_help.send("""看漫画：显示漫画目录
-继续看：从下一话继续看
+继续看/下一话：从下一话继续看
 看漫画 X：跳转看对应话。X为数字，如1 1.5 或ex1 
 漫画帮助：显示这段文字。""")
 
