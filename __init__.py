@@ -61,7 +61,7 @@ async def watch_handle(bot: Bot, event: GroupMessageEvent, arg: Message = Comman
 @continue_watch.handle()
 async def continue_watch_handle(bot: Bot, event: GroupMessageEvent):
     file_name = get_next(await load_json(event.user_id))
-    await send_comic(bot,continue_watch, event, file_name)
+    await send_comic(bot, continue_watch, event, file_name)
     await save_json(event.user_id, file_name)
     pass
 
@@ -161,7 +161,9 @@ async def read_json(user_id):
 
 def get_next(file_name):
     flg = False
-    for file in os.listdir(image_path):
+    files = os.listdir(image_path)
+    files.sort()
+    for file in files:
         if flg:
             return file
         if file.startswith(file_name):
