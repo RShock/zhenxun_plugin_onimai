@@ -172,9 +172,11 @@ def get_next(file_name):
 
 
 def check_num(num):
-    if len(num) == 1:
+    if float(num) < 10:
         num = "0" + num
-    for file in os.listdir(image_path):
+    files = os.listdir(image_path)
+    files.sort()
+    for file in files:
         if file.startswith("别当欧尼酱了！" + num):
             return file
     return None
