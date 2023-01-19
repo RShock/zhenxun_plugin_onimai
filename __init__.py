@@ -3,6 +3,7 @@ import json
 from nonebot import logger
 from nonebot import on_command, require
 from nonebot.adapters.onebot.v11 import (
+    MessageEvent,
     GroupMessageEvent,
     Message,
     MessageSegment, Bot,
@@ -44,37 +45,37 @@ image_path = f"{path}/src/comic/"
 
 
 @watch.handle()
-async def watch_handle(bot: Bot, event: GroupMessageEvent, arg: Message = CommandArg()):
+async def watch_handle(bot: Bot, event: MessageEvent, arg: Message = CommandArg()):
     num = arg.extract_plain_text().strip()
     if num == '':
         # 发送图片
-        await send_index(bot, watch, event)
+        await send_index(bot,event)
     else:
         file = check_num(num)
         if not file:
             await watch.finish(f'您输入的章节"{num}"无法找到')
-        await send_comic(bot, watch, event, file)
+        await send_comic(bot,event, file)
         await save_json(event.user_id, file)
 
 
 # 风控！
 @continue_watch.handle()
-async def continue_watch_handle(bot: Bot, event: GroupMessageEvent):
+async def continue_watch_handle(bot: Bot, event: MessageEvent):
     file_name = get_next(await load_json(event.user_id))
-    await send_comic(bot, continue_watch, event, file_name)
+    await send_comic(bot,event, file_name)
     await save_json(event.user_id, file_name)
     pass
 
 
 @comic_help.handle()
-async def help_handle(event: GroupMessageEvent):
+async def help_handle():
     await comic_help.send("""看漫画：显示漫画目录
 继续看/下一话：从下一话继续看
 看漫画 X：跳转看对应话。X为数字，如1 1.5 或ex1 
 漫画帮助：显示这段文字。""")
 
 
-async def send_index(bot: Bot, bot2, event: GroupMessageEvent):
+async def send_index(bot: Bot,event: MessageEvent):
     index_file_path = f"file:///{path}/src/目录/"
     index_path = f"{path}/src/目录/"
     file = os.listdir(index_path)
@@ -85,10 +86,10 @@ async def send_index(bot: Bot, bot2, event: GroupMessageEvent):
         if file_name.endswith('.jpg'):
             file_path = index_file_path + file_name
             msg.append(MessageSegment.image(file_path))
-    await super_send(bot, bot2, event, msg)
+    await super_send(bot,event, msg)
 
 
-async def send_comic(bot: Bot, bot2, event: GroupMessageEvent, file):
+async def send_comic(bot: Bot,event: MessageEvent, file):
     image_file_path = f"file:///{path}/src/comic/{file}/"
 
     files = os.listdir(image_path + file)
@@ -99,12 +100,12 @@ async def send_comic(bot: Bot, bot2, event: GroupMessageEvent, file):
         if file2.endswith('.jpg'):
             file_path = image_file_path + file2
             msg.append(MessageSegment.image(file_path))
-    await super_send(bot, bot2, event, msg)
+    await super_send(bot,event, msg)
 
 
 async def send_group_msg(
         bot: Bot,
-        event: GroupMessageEvent,
+        event: MessageEvent,
         name: str,
         msgs: list[str],
 ):
@@ -117,12 +118,17 @@ async def send_group_msg(
     @return:
     """
     messages = [MessageSegment.node_custom(bot.self_id, name, m) for m in msgs]
-    await bot.call_api(
-        "send_group_forward_msg", group_id=event.group_id, messages=messages
-    )
+    if isinstance(event, GroupMessageEvent):
+        await bot.call_api(
+            "send_group_forward_msg", group_id=event.group_id, messages=messages
+        )
+    else:
+        await bot.call_api(
+            "send_private_forward_msg", user_id	=event.user_id, messages=messages
+        )
 
 
-async def super_send(bot, bot2, event, msg):
+async def super_send(bot,event, msg):
     try:
         await send_group_msg(bot, event, "小真寻", msg)
     except Exception as e:
