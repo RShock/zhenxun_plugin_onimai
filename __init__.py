@@ -252,8 +252,15 @@ def get_next(file_name):
 
 
 def check_num(num):
-    if float(num) < 10:
-        num = "0" + num
+    try:
+        if float(num) < 10:
+            num = "0" + num
+    except ValueError:
+        if num[:2] == 'ex':
+            try:
+                float(num[2:])
+            except ValueError:
+                return None
     files = os.listdir(image_path)
     files.sort()
     for file in files:
