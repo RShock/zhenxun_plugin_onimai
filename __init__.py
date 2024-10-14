@@ -23,7 +23,7 @@ usage：
 __plugin_des__ = "了解真寻背后的故事"
 __plugin_type__ = ("来点好康的",)
 __plugin_cmd__ = ["看漫画", "继续看", "漫画帮助"]
-__plugin_version__ = 1.2
+__plugin_version__ = 1.2-bd80584
 __plugin_author__ = "XiaoR"
 __plugin_settings__ = {
     "level": 5,
