@@ -11,28 +11,18 @@ from nonebot.adapters.onebot.v11 import (
 )
 from nonebot.exception import FinishedException
 from nonebot.params import CommandArg
+from nonebot.plugin import PluginMetadata
 
-__zx_plugin_name__ = "《别当欧尼酱了！》漫画鉴赏"
-__plugin_usage__ = """
-usage：
+__plugin_meta__ = PluginMetadata(
+    name="《别当欧尼酱了！》漫画鉴赏",
+    description="了解真寻背后的故事",
+    usage="""
     看漫画：显示漫画目录
     继续看：从下一话继续看。
     看漫画 X：跳转到第X话，具体参考看漫画的目录
     漫画帮助：显示这段文字。
-""".strip()
-__plugin_des__ = "了解真寻背后的故事"
-__plugin_type__ = ("来点好康的",)
-__plugin_cmd__ = ["看漫画", "继续看", "漫画帮助"]
-__plugin_version__ = 1.2-bd80584
-__plugin_author__ = "XiaoR"
-__plugin_settings__ = {
-    "level": 5,
-    "default_status": True,
-    "cmd": ["看漫画", "继续看", "漫画帮助"],
-}
-__plugin_configs__ = {
-}
-
+    """.strip(),
+)
 # 看漫画/继续看
 # 漫画帮助
 watch = on_command("看漫画", priority=5, block=True)
@@ -245,4 +235,3 @@ def get_next(file_name):
 
 def check_num(num):
     return next((file for file in os.listdir(image_path) if file.startswith("别当欧尼酱了！" + num)), None)
-
